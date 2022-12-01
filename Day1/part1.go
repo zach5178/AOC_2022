@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -11,7 +12,7 @@ func main() {
 	var fileName string = os.Args[1]
 
 	readFile, err := os.Open(fileName)
-	var elfs [][]int
+	var elfs []int
 
 	if err != nil {
 		fmt.Println(err)
@@ -19,34 +20,22 @@ func main() {
 	fileScanner := bufio.NewScanner(readFile)
 
 	fileScanner.Split(bufio.ScanLines)
-	var elf []int
+	var totalCal int = 0
 	for fileScanner.Scan() {
 		var line string = fileScanner.Text()
 
 		if line != "" {
 			intVal, _ := strconv.Atoi(line)
-			elf = append(elf, intVal)
+			totalCal += intVal
 		} else {
-			elfs = append(elfs, elf)
-			elf = nil
+			elfs = append(elfs, totalCal)
+			totalCal = 0
 		}
 	}
-	elfs = append(elfs, elf)
+	elfs = append(elfs, totalCal)
 	readFile.Close()
-	var largest int = 0
-	for i := range elfs {
-		elf := elfs[i]
-		var totalCal int = 0
-		for j := range elf {
-			totalCal += elf[j]
-		}
-		if totalCal > largest {
-			largest = totalCal
-		}
-		totalCal = 0
-	}
-
-	fmt.Println(largest)
+	sort.Slice(elfs, func(i, j int) bool { return i > j })
+	fmt.Println(elfs[0])
 }
 
 func printSlice(s []int) {

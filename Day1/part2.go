@@ -14,7 +14,7 @@ func main() {
 	var fileName string = os.Args[1]
 
 	readFile, err := os.Open(fileName)
-	var elfs [][]int
+	var elfs []int
 
 	if err != nil {
 		fmt.Println(err)
@@ -22,45 +22,25 @@ func main() {
 	fileScanner := bufio.NewScanner(readFile)
 
 	fileScanner.Split(bufio.ScanLines)
-	var elf []int
+	var totalCal int = 0
 	for fileScanner.Scan() {
 		var line string = fileScanner.Text()
 
 		if line != "" {
 			intVal, _ := strconv.Atoi(line)
-			elf = append(elf, intVal)
+			totalCal += intVal
 		} else {
-			elfs = append(elfs, elf)
-			elf = nil
+			elfs = append(elfs, totalCal)
+			totalCal = 0
 		}
 	}
-	elfs = append(elfs, elf)
+	elfs = append(elfs, totalCal)
 	readFile.Close()
-	var top []int
-
-	for i := range elfs {
-		elf := elfs[i]
-		// printSlice(elf)
-		var totalCal int = 0
-		for j := range elf {
-			totalCal += elf[j]
-		}
-
-		if len(top) == numberOfElvesToTrack {
-			// fmt.Println(top[2])
-			// fmt.Println(totalCal)
-			if top[2] < totalCal {
-				top[2] = totalCal
-			}
-		} else {
-			top = append(top, totalCal)
-		}
-		sort.Slice(top, func(i, j int) bool { return top[i] > top[j] })
-		totalCal = 0
-	}
+	sort.Slice(elfs, func(i, j int) bool { return i > j })
+	printSlice(elfs)
 	var topTotal int = 0
-	for i := range top {
-		topTotal += top[i]
+	for i := 0; i < numberOfElvesToTrack; i++ {
+		topTotal += elfs[i]
 	}
 	fmt.Println(topTotal)
 }
